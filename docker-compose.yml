@@ -1,0 +1,86 @@
+# Infraestrutura local do ComuniMap.
+#   docker compose up -d --build
+#
+# Portas publicadas só em 127.0.0.1 e fora do padrão, para não colidir com outros projetos:
+#   API 8010 · Postgres 5442 · Redis 6389   (mude no .env se precisar)
+
+name: comunimap
+
+x-backend: &backend
+  build: ./backend
+  environment: &backend-env
+    ENVIRONMENT: development
+    DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-comunimap}:${POSTGRES_PASSWORD:-comunimap}@db:5432/${POSTGRES_DB:-comunimap}
+    REDIS_URL: redis://redis:6379/0
+    CELERY_BROKER_URL: redis://redis:6379/1
+    SECRET_KEY: ${SECRET_KEY:-dev-only-secret-change-me-before-deploying}
+    CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5273,http://127.0.0.1:5273}
+    MEDIA_ROOT: /data/media
+    MODERATION_BLOCKLIST: ${MODERATION_BLOCKLIST:-}
+  volumes:
+    - ./backend:/app # código montado: editar no host recarrega a API
+    - media:/data/media # fotos, compartilhadas entre API e worker
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-comunimap}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-comunimap}
+      POSTGRES_DB: ${POSTGRES_DB:-comunimap}
+    ports:
+      - "127.0.0.1:${DB_PORT:-5442}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # -h 127.0.0.1: na primeira subida o Postgres roda um servidor temporário só no socket
+      # Unix; checar por TCP evita marcar "healthy" antes de a API conseguir conectar.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6389}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  backend:
+    <<: *backend
+    # Aplica as migrações e sobe a API com reload.
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    environment:
+      <<: *backend-env
+      WATCHFILES_FORCE_POLLING: "true" # bind mount do Windows não emite eventos de arquivo
+    ports:
+      - "127.0.0.1:${API_PORT:-8010}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  worker:
+    <<: *backend
+    # Celery: processa fotos (WebP + miniatura) e moderação.
+    command: celery -A app.worker.celery_app worker --loglevel=info --concurrency=2
+
+volumes:
+  pgdata:
+  media:

@@ -1,0 +1,21 @@
+# segredos locais
+.env
+frontend/.env
+frontend/.env.local
+
+# front-end
+node_modules/
+frontend/dist/
+
+# back-end
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

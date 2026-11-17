@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    border-radius: 1.25rem;
+    z-index: 10;
+}
+
+/* Fallback sem chave do CARTO: tiles claros do OSM invertidos para o tema escuro.
+   O filtro fica só no painel de tiles; pinos e popups mantêm as cores. */
+.tiles-dark-filter .leaflet-tile-pane {
+    filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.55);
+}
+
+/* Fundo dos tiles enquanto carregam: mesmo tom do CartoDB Dark Matter */
+.leaflet-container {
+    background: #0b0f17;
+    font-family: 'Inter', sans-serif;
+}
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border: 1px solid #334155;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    border-radius: 0.75rem;
+}
+
+.leaflet-control-attribution {
+    background: rgba(15, 23, 42, 0.75) !important;
+    color: #94a3b8 !important;
+}
+.leaflet-control-attribution a {
+    color: #cbd5e1 !important;
+}
+
+.leaflet-bar a, .leaflet-bar a:hover {
+    background-color: #0f172a;
+    color: #e2e8f0;
+    border-bottom-color: #334155;
+}
+.leaflet-bar a:hover {
+    background-color: #1e293b;
+}
+.leaflet-bar a.leaflet-disabled {
+    background-color: #0f172a;
+    color: #475569;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.6);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #1e293b;
+}
+
+.marker-pulse-red {
+    background-color: #f43f5e;
+    box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4);
+}
+
+.marker-pulse-green {
+    background-color: #10b981;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+}
+
+.marker-pulse-amber {
+    background-color: #f59e0b;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+}
+
+.crosshair-cursor #map {
+    cursor: crosshair !important;
+}
+
+/* Pino arrastável do seletor de local */
+.picker-pin {
+    cursor: grab;
+}
+.picker-pin:active {
+    cursor: grabbing;
+}

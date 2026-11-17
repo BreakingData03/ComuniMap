@@ -18,11 +18,11 @@ export function Header({ user, onOpenModal, onLogout }: HeaderProps) {
           <div className="min-w-0">
             <h1 className="text-base sm:text-lg font-bold text-white leading-tight flex items-center gap-2 truncate">
               ComuniMap
-              <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono font-medium hidden sm:inline">
+              <span className="text-[10px] md:text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 md:px-2.5 py-0.5 rounded-full font-mono font-medium hidden sm:inline">
                 Três Lagoas-MS
               </span>
               {DEMO_MODE && (
-                <span className="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full font-mono font-medium hidden sm:inline">
+                <span className="text-[10px] md:text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 md:px-2.5 py-0.5 rounded-full font-mono font-medium hidden sm:inline">
                   Demonstração
                 </span>
               )}

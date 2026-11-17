@@ -95,7 +95,7 @@ export function LocationPicker({ mode, visible, location, onRequestMapPick }: Lo
   return (
     <div className="bg-slate-950/60 rounded-2xl border border-slate-800 overflow-hidden">
       {/* isolate: os painéis do Leaflet (z-index 400+) não passam por cima da lista de sugestão de ruas */}
-      <div className="relative isolate h-40">
+      <div className="relative isolate h-40 md:h-[130px]">
         <div ref={containerRef} className={`w-full h-full ${TILE_LAYER.containerClass}`} aria-label="Mapa para ajustar o local do registro"></div>
         <button
           type="button"

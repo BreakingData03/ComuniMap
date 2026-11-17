@@ -1,3 +1,4 @@
+import { DEMO_MODE } from '../config'
 import type { FormMode, User } from '../types'
 
 interface HeaderProps {
@@ -20,6 +21,11 @@ export function Header({ user, onOpenModal, onLogout }: HeaderProps) {
               <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono font-medium hidden sm:inline">
                 Três Lagoas-MS
               </span>
+              {DEMO_MODE && (
+                <span className="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full font-mono font-medium hidden sm:inline">
+                  Demonstração
+                </span>
+              )}
             </h1>
             <p className="text-xs text-slate-400 hidden sm:block">Mapeamento Urbano Colaborativo</p>
           </div>

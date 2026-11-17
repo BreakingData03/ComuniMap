@@ -20,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>(() => (getToken() ? 'loading' : 'anonymous'))
 
   const logout = useCallback(() => {
+    authApi.logout()
     setToken(null)
     setUser(null)
     setStatus('anonymous')

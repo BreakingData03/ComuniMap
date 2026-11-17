@@ -1,0 +1,67 @@
+name: Publicar front no GitHub Pages
+
+# Compila frontend/ e publica no GitHub Pages do repositório.
+#
+# Só roda onde a variável de repositório DEPLOY_PAGES for "true"
+# (Settings > Secrets and variables > Actions > Variables). Sem ela o workflow é ignorado,
+# então quem não quer trocar a página atual não precisa fazer nada.
+#
+# Variáveis opcionais:
+#   VITE_API_BASE_URL   endereço público da API. Vazio = modo demonstração (sem back-end,
+#                       dados no navegador do visitante).
+#   VITE_CARTO_API_KEY  chave do tema escuro CARTO Dark Matter.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: vars.DEPLOY_PAGES == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+
+      - run: npm run build
+        env:
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+          VITE_DEMO_MODE: ${{ vars.VITE_API_BASE_URL == '' && 'true' || 'false' }}
+          VITE_CARTO_API_KEY: ${{ vars.VITE_CARTO_API_KEY }}
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

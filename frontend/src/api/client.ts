@@ -39,7 +39,7 @@ export function setUnauthorizedHandler(handler: (() => void) | null): void {
 /** Caminhos de mídia vêm relativos da API (/media/...). */
 export function mediaUrl(path: string | null): string | null {
   if (!path) return null
-  return /^https?:\/\//.test(path) ? path : `${BASE}${path}`
+  return /^(https?:|blob:|data:)/.test(path) ? path : `${BASE}${path}`
 }
 
 interface RequestOptions {

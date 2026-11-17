@@ -111,6 +111,16 @@ não colidir com outros projetos na mesma máquina; para trocar, veja [Configura
 
 Para desligar: `docker compose down` (os dados ficam no volume; `down -v` apaga tudo).
 
+### Modo demonstração
+
+Com `VITE_DEMO_MODE=true` o front roda **sem a API**: os registros ficam no navegador de quem
+visita, a tela de login ganha o botão "Pular e ver o mapa" e alguns registros de exemplo já vêm
+no mapa. Serve para mostrar o projeto num site estático, como o GitHub Pages.
+
+O workflow [`pages.yml`](.github/workflows/pages.yml) publica o front no Pages. Ele só roda no
+repositório que tiver a variável `DEPLOY_PAGES=true`, e entra em modo demonstração sozinho
+enquanto `VITE_API_BASE_URL` não estiver definida.
+
 ## Estrutura de pastas
 
 ```
@@ -280,6 +290,7 @@ exemplo e edite.
 | --- | --- | --- |
 | `VITE_API_BASE_URL` | vazio (mesma origem) | Endereço público da API em produção |
 | `VITE_CARTO_API_KEY` | vazio | Chave do tema escuro CARTO Dark Matter |
+| `VITE_DEMO_MODE` | `false` | `true` roda sem API, com dados no navegador |
 | `VITE_DEV_API_TARGET` | `http://localhost:8010` | Para onde o Vite repassa `/api` em desenvolvimento |
 
 ## Antes de implantar o piloto

@@ -1,5 +1,11 @@
 import type { LatLng } from './types'
 
+/**
+ * Modo demonstração: o app roda sem back-end, com os dados no navegador do visitante.
+ * Usado na vitrine estática do GitHub Pages enquanto a API não está publicada.
+ */
+export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true'
+
 /** Cidade atendida por esta instância do front. */
 export const CITY = {
   name: 'Três Lagoas',

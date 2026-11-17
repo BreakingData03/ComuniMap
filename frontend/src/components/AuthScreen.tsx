@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { ApiError } from '../api/client'
+import { DEMO_VISITOR_EMAIL } from '../api/demo'
+import { DEMO_MODE } from '../config'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 
@@ -61,6 +63,17 @@ export function AuthScreen({ onEnter }: { onEnter: () => void }) {
       } else {
         showToast(errorMessage(err, 'Não foi possível concluir o cadastro.'), 'error')
       }
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  /** Modo demonstração: entra direto no mapa como visitante, sem cadastro. */
+  async function entrarSemCadastro() {
+    setBusy(true)
+    try {
+      await login(DEMO_VISITOR_EMAIL, '')
+      onEnter()
     } finally {
       setBusy(false)
     }
@@ -206,6 +219,23 @@ export function AuthScreen({ onEnter }: { onEnter: () => void }) {
                 </p>
               </div>
             </form>
+          )}
+
+          {DEMO_MODE && (
+            <div className="mt-5 pt-5 border-t border-slate-800 space-y-3">
+              <button
+                type="button"
+                onClick={() => void entrarSemCadastro()}
+                disabled={busy}
+                className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl text-xs sm:text-sm border border-slate-700 transition-all active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2"
+              >
+                <i className="fa-solid fa-forward text-emerald-400"></i>
+                Pular e ver o mapa
+              </button>
+              <p className="text-[11px] text-slate-500 text-center leading-relaxed">
+                Versão de demonstração: os registros ficam salvos só neste navegador e qualquer senha é aceita.
+              </p>
+            </div>
           )}
         </div>
       )}
